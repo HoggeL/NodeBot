@@ -10,6 +10,10 @@ function calculateTime(seconds) {
 	return { s: _s, m: _m, h: _h };
 }
 
+//
+// commands starting with "__" are ignored by message parsing
+//
+
 module.exports = [];
 module.exports.__init = function() {
 	player.discordClient = this.discordClient;
