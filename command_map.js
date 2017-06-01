@@ -28,6 +28,7 @@ module.exports["download"] = function(message) {
 
 	if (songname === undefined) {
 		message.channel.send("That is not a valid song name, you dofus!");
+		message.channel.stopTyping();
 		return;
 	}
 
@@ -36,6 +37,7 @@ module.exports["download"] = function(message) {
 	if (voiceChannel === undefined) {
 		if (message.member.voiceChannel === undefined) {
 			message.channel.send("You are not in a voice channel");
+			message.channel.stopTyping();
 			return;
 		}
 		else
@@ -66,6 +68,7 @@ module.exports["play"] = function(message) {
 
 	if (songname === undefined) {
 		message.channel.send("That is not a valid song name, you dofus!");
+		message.channel.stopTyping();
 		return;
 	}
 
@@ -74,6 +77,7 @@ module.exports["play"] = function(message) {
 	if (voiceChannel === undefined) {
 		if (message.member.voiceChannel === undefined) {
 			message.channel.send("You are not in a voice channel");
+			message.channel.stopTyping();
 			return;
 		}
 		else
@@ -153,7 +157,8 @@ module.exports["queue"] = function(message) {
 	}, this);
 
 	m += "\n```";
-	message.channel.send(m)
+	message.channel.send(m);
+	message.channel.stopTyping();
 }
 module.exports["np"] = function(message) {
 	var nowPlaying = player.getNowPlaying();
@@ -206,12 +211,14 @@ module.exports["remove"] = function(message) {
 	message.channel.stopTyping();
 	if (isNaN(n)) {
 		message.channel.send("Not a valid number");
+		message.channel.stopTyping();
 		return;
 	}
 
 	player.remove(n, n);
 	message.channel.stopTyping();
 	message.channel.send("Removing song **" + n + "**");
+	message.channel.stopTyping();
 }
 module.exports["cheekybreeky"] = function(message) {
 	message.channel.send("Sluta nu, Hampus");
@@ -227,6 +234,8 @@ module.exports["help"] = function(message) {
 		}
 		else
 			message.channel.send("Command not recognized");
+
+		message.channel.stopTyping();
 		return;
 	}
 
@@ -245,13 +254,17 @@ module.exports["help"] = function(message) {
 
 module.exports["shuffle"] = function(message) {
 	message.channel.send("Not done yet");
+	message.channel.stopTyping();
 }
 
 module.exports["playnext"] = function(message) {	
 	message.channel.send("Not done yet");
+	message.channel.send("Playing next song: ")
+	message.channel.stopTyping();
 }
 
 
 module.exports["todo"] = function(message) {	
 	message.channel.send("Todo: ```Markdown\n1.shuffle\n2.playnext\n3.download\n```");
+	message.channel.stopTyping();
 }

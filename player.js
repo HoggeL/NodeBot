@@ -1,4 +1,4 @@
-var shuffle = require('shuffle-array');
+const var shuffleArray = require('shuffle-array');
 
 module.exports = {
     isPlaying: false,
@@ -143,6 +143,6 @@ module.exports = {
         console.log(this.queue.splice(begin, numToRemove));
     },
     shuffle: function() {
-        shuffle(this.queue);
+        shuffleArray(this.queue);
     }
 }
