@@ -94,7 +94,8 @@ module.exports = {
             }, this);
         }
         else {
-            channel.send("Adding " + playInfo.metadata.title + " to queue");
+            if (playInfo.announce === true)
+                channel.send("Adding " + playInfo.metadata.title + " to queue");
             this.queue.push(playInfo);
         }
     },

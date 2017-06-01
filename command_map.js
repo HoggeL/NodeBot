@@ -25,45 +25,45 @@ module.exports.__dispose = function() {
 }
 module.exports.connection = undefined;
 module.exports.discordClient = undefined;
-module.exports["download"] = function(message) {
-	message.channel.startTyping();
 
-	var songname = message.content.split(/^\//)[1].split(/^([^\s]*)(\s)/)[3];
+// Disabled for now
+// module.exports["download"] = function(message) {
+// 	message.channel.startTyping();
 
-	if (songname === undefined) {
-		message.channel.send("That is not a valid song name, you dofus!");
-		message.channel.stopTyping();
-		return;
-	}
+// 	var songname = message.content.split(/^\//)[1].split(/^([^\s]*)(\s)/)[3];
 
-	var voiceChannel = this.voiceChannel;
+// 	if (songname === undefined) {
+// 		message.channel.send("That is not a valid song name, you dofus!");
+// 		message.channel.stopTyping();
+// 		return;
+// 	}
 
-	if (voiceChannel === undefined) {
-		if (message.member.voiceChannel === undefined) {
-			message.channel.send("You are not in a voice channel");
-			message.channel.stopTyping();
-			return;
-		}
-		else
-			voiceChannel = message.member.voiceChannel
-		return;
-	}
+// 	var voiceChannel = this.voiceChannel;
 
-	voiceChannel.join().then(connection =>{
-		this.connection = connection;
-		utils.getYoutubeURL(songname, function(metadata) {
-			utils.downloadVio(metadata.url, 
-			function(fname) {
-				player.enqueue(message.channel, { name: fname, stream: false, metadata })	
-			}, 
-			function(fname) {
-				player.start(message, connection);
-				message.channel.stopTyping();
-			});
-		});
-	}).catch(err => console.log(err));
-}
+// 	if (voiceChannel === undefined) {
+// 		if (message.member.voiceChannel === undefined) {
+// 			message.channel.send("You are not in a voice channel");
+// 			message.channel.stopTyping();
+// 			return;
+// 		}
+// 		else
+// 			voiceChannel = message.member.voiceChannel
+// 	}
 
+// 	voiceChannel.join().then(connection =>{
+// 		this.connection = connection;
+// 		utils.getYoutubeURL(songname, function(metadata) {
+// 			utils.downloadVideo(metadata.url, 
+// 			function(fname) {
+// 				player.enqueue(message.channel, { name: fname, stream: false, metadata })	
+// 			}, 
+// 			function(fname) {
+// 				player.start(message, connection);
+// 				message.channel.stopTyping();
+// 			});
+// 		});
+// 	}).catch(err => console.log(err));
+// }
 
 module.exports["play"] = function(message) {
 	message.channel.startTyping();
