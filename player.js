@@ -1,4 +1,4 @@
-const var shuffleArray = require('shuffle-array');
+const shuffleArray = require('shuffle-array');
 
 module.exports = {
     isPlaying: false,
