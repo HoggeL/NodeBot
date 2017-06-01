@@ -4,7 +4,6 @@ const youtubedl = require('youtube-dl');
 const xray = require("x-ray");
 const fs = require('fs');
 const url = require('url');
-const iconv = require("iconv");
 const Entities = require('html-entities').XmlEntities;
 
 module.exports = {
