@@ -257,13 +257,13 @@ module.exports["help"] = function(message) {
 }
 
 module.exports["shuffle"] = function(message) {
-	message.channel.send("Not done yet");
+	player.shuffle();
+	message.channel.send("Shuffling");
 	message.channel.stopTyping();
 }
 
 module.exports["playnext"] = function(message) {	
 	message.channel.send("Not done yet");
-	message.channel.send("Playing next song: ")
 	message.channel.stopTyping();
 }
 

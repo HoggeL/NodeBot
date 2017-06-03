@@ -1,9 +1,10 @@
 const shuffleArray = require('shuffle-array');
+const ytdl = require('ytdl-core');
 
 module.exports = {
     isPlaying: false,
-    dispatcher: undefined,
     nowplaying: undefined,
+    dispatcher: undefined,
     queue: [],
     lastEnd: undefined,
     channel: undefined,
@@ -25,8 +26,7 @@ module.exports = {
             this.dispatcher = connection.playFile(playInfo.name, { passes: 4 })
         }
         else {
-            const ytdl = require('ytdl-core');
-            const stream = ytdl(playInfo.name, { filter : 'audioonly' });
+            var stream = ytdl(playInfo.name, { filter : 'audioonly' });
 	        this.dispatcher = connection.playStream(stream, { passes: 4 });
         }
 
@@ -38,10 +38,10 @@ module.exports = {
         this.discordClient.user.setGame(playInfo.metadata.title);
 
 	    this.dispatcher.on("end", end => {
-            this.discordClient.user.setGame("nothing");
-
             this.dispatcher.removeAllListeners("end");
-            this.dispatcher.end();
+            this.dispatcher.destroy();
+
+            this.discordClient.user.setGame("nothing");
 
             this.isPlaying = false;
 
@@ -54,15 +54,15 @@ module.exports = {
 
             // this.lastEnd = date.getMilliseconds();
 
-            if (this.dispatcher.time < (this.currentPlayInfo.metadata.length * 1000) - 1000) {
+            if (end === undefined) {
                 console.log("Song is not done yet");
+                this.dispatcher.stream = undefined;
                 this.play(channel, connection, playInfo, true);
                 return;
             }
 
             if (this.queue.length > 0) {
                 console.log("trying to play next");
-                console.log(this.dispatcher.time);
                 this.play(channel, connection, this.queue.shift(), false);
             }
 	    });
@@ -106,15 +106,16 @@ module.exports = {
         if (this.dispatcher !== undefined)
             this.dispatcher.resume();
     },
-    skip: function(channel, connection) {
+    skip: function() {
         this.discordClient.user.setGame("nothing");
         
         this.isPlaying = false;
         if (this.dispatcher !== undefined) {
             this.dispatcher.removeAllListeners("end");
-            this.dispatcher.on("end", end => {});
-            this.dispatcher.end();
-            this.play(this.channel, this.connection, this.queue.shift(), false);
+            this.dispatcher.on("end", end => { });
+            this.dispatcher.end("skip");
+            this.dispatcher.destroy();
+            this.play(this.channel, this.connection, this.queue.shift(), false);    
         }
     },
     getQueue: function() {
