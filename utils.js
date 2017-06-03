@@ -96,16 +96,15 @@ module.exports = {
                     });
                 } else {
                     const utils = require("./utils.js")
-                    utils.getYoutubeURL($("span#eow-title").attr("title"), function(metadata){
+                    utils.getYoutubeURL($("span#eow-title").attr("title"), function(_metadata){
+                        var metadata = { 
+                            title: $("span#eow-title").attr("title"),
+                            announce: true,
+                            url: query,
+                            length: _metadata.length
+                        };
                         callback(metadata);
                     });
-
-                    /*var metadata = { 
-                        title: $("span#eow-title").attr("title"),
-                        announce: true,
-                        url: query
-                    };
-                    callback(metadata);*/
                 }
             });
         });

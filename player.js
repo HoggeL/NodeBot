@@ -39,6 +39,7 @@ module.exports = {
 
 	    this.dispatcher.on("end", end => {
             this.dispatcher.removeAllListeners("end");
+            this.dispatcher.stream.destroy();
             this.dispatcher.destroy();
 
             this.discordClient.user.setGame("nothing");
@@ -114,6 +115,7 @@ module.exports = {
             this.dispatcher.removeAllListeners("end");
             this.dispatcher.on("end", end => { });
             this.dispatcher.end("skip");
+            this.dispatcher.stream.destroy();
             this.dispatcher.destroy();
             this.play(this.channel, this.connection, this.queue.shift(), false);    
         }
