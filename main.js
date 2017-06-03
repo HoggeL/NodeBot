@@ -1,8 +1,7 @@
+const settings = require("./settings.js");
 const Discord = require('discord.js');
 const client = new Discord.Client();
-//const token = 'MzAxNDUxMTMzNjE5MjczNzMw.DAjaQQ.mzyBK9v86j3dQ60pPcSPvIthG94';
-const token = "MzE4MzI0MTI5MTg5MDY4ODAx.DAwvIw.rfqN9lQIxsEBCBLzze4KUVgmZ3s"; 
-//const token = "MzE5OTI1NTgwMzE5Njg2NjU4.DBIBbw.ypYnKWzF1scihiP7f6MeLZBhF0E"; 
+const token = settings.token;
 const streamOptions = { seek: 0, volume: 1 };
 const commandMap = require("./command_map.js")
 
