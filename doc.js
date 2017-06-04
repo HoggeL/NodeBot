@@ -28,5 +28,8 @@ module.exports = {
     },
     clear: function() {
         return "Clears the current queue.";
+    },
+    playnext: function() {
+        return "Puts item in the first slot of the playlist queue.";
     }
 }

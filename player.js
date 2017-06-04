@@ -87,16 +87,22 @@ module.exports = {
         if (this.queue.length > 0)
             this.play(message.channel, connection, this.queue.shift(), false);
     },
-    enqueue: function(channel, playInfo) {
+    enqueue: function(channel, playInfo, unshift = false) {
         if (playInfo.metadata instanceof Array) {
             channel.send("Adding **" + playInfo.metadata.length + "** songs to queue");
             playInfo.metadata.forEach(function(metadata) {
-                this.queue.push({ name: metadata.url, stream: playInfo.stream, metadata });
+                if (unshift)
+                    this.queue.unshift({ name: metadata.url, stream: playInfo.stream, metadata });
+                else
+                    this.queue.push({ name: metadata.url, stream: playInfo.stream, metadata });
             }, this);
         }
         else {
-            channel.send("Adding " + playInfo.metadata.title + " to queue");
-            this.queue.push(playInfo);
+            channel.send("Adding **" + playInfo.metadata.title + "** to queue");
+            if (unshift)
+                this.queue.unshift(playInfo);
+            else
+                this.queue.push(playInfo);
         }
     },
     pause: function() {

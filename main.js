@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const token = settings.token;
 const streamOptions = { seek: 0, volume: 1 };
-const commandMap = require("./command_map.js")
+const commandMap = require("./commandParser.js")
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
