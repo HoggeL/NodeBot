@@ -26,7 +26,10 @@ function getNowPlaying() {
 				 + (n.m <= 9 ? "0" + n.m : n.m) + ":"
 				 + (n.s <= 9 ? "0" + n.s : n.s) + "]`";
 
-		m = "Playing **" + nowPlaying.title + "** " + pstr + "\n\n";
+		if (nowPlaying.isLive)
+			m = "Streaming **" + nowPlaying.title + "**\n\n";
+		else
+			m = "Playing **" + nowPlaying.title + "** " + pstr + "\n\n";
 	}
 	return m;
 }
@@ -102,6 +105,20 @@ module.exports = {
 			player.start(message, connection);
 		});
 	},
+	stream: function(message) {
+		parsePlayMessage(message, function(metadata) {
+			if (metadata === undefined) {
+				message.channel.send("I did not find anything like that");
+				message.channel.stopTyping();
+				return;
+			}
+
+			metadata.isLive = true;
+
+			player.enqueue(message.channel, { name: metadata.url, stream: true, metadata }, true)
+			player.start(message, connection);
+		});
+	},
 	pause: function(message) {
 		player.pause();
 		message.channel.stopTyping();
@@ -142,6 +159,24 @@ module.exports = {
 	},
 	np: function(message) {
 		message.channel.send(getNowPlaying());
+	},
+	volume: function(message) {
+		var volume = Number(message.content.split(/^\//)[1].split(/^([^\s]*)(\s)/)[3]);
+		if (isNaN(volume)) {
+			message.channel.send("Not a valid input");
+			return;
+		}
+		if (volume < 0 || volume > 1) {
+			message.channel.send("Volume must be between 0 and 1");
+			return;
+		}
+		if (player.dispatcher === undefined) {
+			message.channel.send("Nothing is playing");
+			return;
+		}
+		player.dispatcher.setVolume(volume);
+		plauer.volume = volume;
+		message.channel.send("Volume set to " + volume);
 	},
 	clear: function(message) {
 			player.remove(0, undefined);
@@ -219,7 +254,7 @@ module.exports = {
 		message.channel.stopTyping();
 	},
 	todo: function(message) {
-		message.channel.send("Todo: ```Markdown\n1.playnext\n2.download\n```");
+		message.channel.send("Todo: ```Markdown\n1.save/dump playlist\n2.download\n```");
 		message.channel.stopTyping();
 	}
 }

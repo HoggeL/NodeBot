@@ -31,5 +31,11 @@ module.exports = {
     },
     playnext: function() {
         return "Puts item in the first slot of the playlist queue.";
+    },
+    stream: function() {
+        return "Starts a specified stream using url.";
+    },
+    volume: function() {
+        return "Sets specified volume between 0 and 1.";
     }
 }

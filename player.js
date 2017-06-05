@@ -11,6 +11,7 @@ module.exports = {
     connection: undefined,
     currentPlayInfo: undefined,
     discordClient: undefined,
+    volume: 0.1,
 
     play: function(channel, connection, playInfo, isRetry) {
         if (playInfo === undefined)
@@ -23,17 +24,26 @@ module.exports = {
         this.currentPlayInfo = playInfo;
         
         if (playInfo.stream === false) {
-            this.dispatcher = connection.playFile(playInfo.name, { passes: 4 })
+            this.dispatcher = connection.playFile(playInfo.name, { passes: 2 })
         }
         else {
-            var stream = ytdl(playInfo.name, { filter : 'audioonly' });
-	        this.dispatcher = connection.playStream(stream, { passes: 4 });
+            var stream = undefined;
+            if (playInfo.metadata.isLive === undefined || playInfo.metadata.isLive === false)
+                stream = ytdl(playInfo.name, { filter : 'audioonly' })
+	        else
+                stream = ytdl(playInfo.name)
+            
+            this.dispatcher = connection.playStream(stream, { passes: 2 });
         }
 
-        this.dispatcher.setVolume(0.1)
+        this.dispatcher.setVolume(this.volume);
         this.isPlaying = true;
-        if (isRetry === false)
-            channel.send("Now playing **" + playInfo.metadata.title + "**")
+        if (isRetry === false) {
+            if (playInfo.metadata.isLive === true)
+                channel.send("Now streaming **" + playInfo.metadata.title + "**")
+            else
+                channel.send("Now playing **" + playInfo.metadata.title + "**")
+        }
 
         this.discordClient.user.setGame(playInfo.metadata.title);
 

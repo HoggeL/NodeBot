@@ -82,8 +82,13 @@ module.exports = {
                         if (title.attr("href").includes("user") || title.attr("href").includes("list"))
                             return true;
 
-                        var a = $(this).find("span.video-time").html().split(":");
-                        var seconds = ((+a[0]) * 60) + (+a[1]);
+                        var time = $(this).find("span.video-time").html();
+                        var a = undefined;
+                        var seconds = 0;
+                        if (time !== null) {
+                            a = $(this).find("span.video-time").html().split(":");
+                            seconds = ((+a[0]) * 60) + (+a[1]);
+                        }
 
                         var metadata = { 
                             title: entities.decode(title.html().trim()),
