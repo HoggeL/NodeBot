@@ -96,17 +96,22 @@ module.exports = {
                             url: "www.youtube.com" + title.attr("href"),
                             length: seconds
                         };
+
                         callback(metadata);
                         return false;
                     });
                 } else {
                     const utils = require("./utils.js")
                     utils.getYoutubeURL($("span#eow-title").attr("title"), function(_metadata){
+                        var len = 0;
+                        if (_metadata !== undefined)
+                            len = _metadata.length;
+
                         var metadata = { 
                             title: $("span#eow-title").attr("title"),
                             announce: true,
                             url: query,
-                            length: _metadata.length
+                            length: len
                         };
                         callback(metadata);
                     });

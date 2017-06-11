@@ -47,6 +47,7 @@ module.exports = {
 
         this.discordClient.user.setGame(playInfo.metadata.title);
 
+
 	    this.dispatcher.on("end", end => {
             this.dispatcher.removeAllListeners("end");
             this.dispatcher.stream.destroy();
@@ -79,7 +80,8 @@ module.exports = {
 	    });
     
 	    this.dispatcher.on('error', e => {
-	    	console.log(e);	
+	    	console.log("Dispatcher error callback");
+            console.log(e);	
 	    });
     },
     start: function(message, connection) {

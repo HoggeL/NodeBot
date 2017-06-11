@@ -115,7 +115,7 @@ module.exports = {
 
 			metadata.isLive = true;
 
-			player.enqueue(message.channel, { name: metadata.url, stream: true, metadata }, true)
+			player.enqueue(message.channel, { name: metadata.url, stream: true, metadata }, false)
 			player.start(message, connection);
 		});
 	},
