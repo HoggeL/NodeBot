@@ -256,6 +256,10 @@ module.exports = {
 	todo: function(message) {
 		message.channel.send("Todo: ```Markdown\n1.save/dump playlist\n2.download\n```");
 		message.channel.stopTyping();
+	}, 
+	shrug: function(message){
+		message.channel.send("¯\_(ツ)_/¯"); 
+		message.channel.stopTyping();
 	}
 }
 // Disabled for now
