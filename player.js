@@ -1,5 +1,6 @@
 const shuffleArray = require('shuffle-array');
 const ytdl = require('ytdl-core');
+var SC = require('node-soundcloud');
 
 module.exports = {
     isPlaying: false,
@@ -22,11 +23,11 @@ module.exports = {
         this.nowplaying = playInfo.metadata;
 
         this.currentPlayInfo = playInfo;
-        
+
         if (playInfo.stream === false) {
             this.dispatcher = connection.playFile(playInfo.name, { passes: 2 })
         }
-        else {
+        else if (playInfo.metadata.url.indexOf("youtube.com") > -1) {
             var stream = undefined;
             if (playInfo.metadata.isLive === undefined || playInfo.metadata.isLive === false)
                 stream = ytdl(playInfo.name, { filter : 'audioonly' })
@@ -35,17 +36,22 @@ module.exports = {
             
             this.dispatcher = connection.playStream(stream, { passes: 2 });
         }
+        else if (playInfo.metadata.url.indexOf("soundcloud.com") > -1) {
+
+            //this.dispatcher = connection.playStream(, { passes: 2 });
+        }
 
         this.dispatcher.setVolume(this.volume);
         this.isPlaying = true;
-        if (isRetry === false) {
+        if (isRetry === false && playInfo.metadata !== undefined) {
             if (playInfo.metadata.isLive === true)
                 channel.send("Now streaming **" + playInfo.metadata.title + "**")
             else
                 channel.send("Now playing **" + playInfo.metadata.title + "**")
         }
 
-        this.discordClient.user.setGame(playInfo.metadata.title);
+        if (playInfo.metadata !== undefined)
+            this.discordClient.user.setGame(playInfo.metadata.title);
 
 
 	    this.dispatcher.on("end", end => {
@@ -110,7 +116,9 @@ module.exports = {
             }, this);
         }
         else {
-            channel.send("Adding **" + playInfo.metadata.title + "** to queue");
+            if (playInfo.metadata !== undefined)
+                channel.send("Adding **" + playInfo.metadata.title + "** to queue");
+
             if (unshift)
                 this.queue.unshift(playInfo);
             else

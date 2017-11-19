@@ -8,8 +8,6 @@ const Entities = require('html-entities').XmlEntities;
 
 module.exports = {
     getYoutubeURL: function(query, callback) {
-        console.log(query);
-
         var options = {}
         var isUrl = false;
         var isList = false;
@@ -79,7 +77,7 @@ module.exports = {
                         callback(undefined);
                     $("div.yt-lockup").each(function(elem) {
                         var title = $(this).find("a.yt-uix-tile-link");
-                        if (title.attr("href").includes("user") || title.attr("href").includes("list"))
+                        if (title.attr("href").includes("user") || title.attr("href").includes("list") || title.attr("href").includes("ads"))
                             return true;
 
                         var time = $(this).find("span.video-time").html();
@@ -117,6 +115,15 @@ module.exports = {
                     });
                 }
             });
+        });
+    },
+
+    getSoundCloudUrl(query, callback) {
+        callback({
+            title: "asd",
+            url: "https://soundcloud.com/canti_god_of_the_black_flames",
+            announce: true,
+            length: 110,
         });
     },
 

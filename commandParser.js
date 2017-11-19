@@ -2,6 +2,9 @@ const player = require("./player.js");
 const utils = require("./utils");
 const doc = require("./doc.js");
 
+_voiceChannel = undefined;
+_connection = undefined;
+
 function calculateTime(seconds) {
 	var time = seconds;
 	var _m = Math.floor(time / 60);
@@ -43,8 +46,12 @@ function parsePlayMessage(message, callback) {
 		message.channel.stopTyping();
 		return;
 	}
-
-	var voiceChannel = this.voiceChannel;
+	
+	var connected = false;
+	if (_connection !== undefined)
+		connected = true;
+	
+	var voiceChannel = _voiceChannel;
 
 	if (voiceChannel === undefined) {
 		if (message.member.voiceChannel === undefined) {
@@ -52,16 +59,34 @@ function parsePlayMessage(message, callback) {
 			message.channel.stopTyping();
 			return;
 		}
-		else
-			voiceChannel = message.member.voiceChannel
+		else {
+			_voiceChannel = voiceChannel = message.member.voiceChannel;
+		}
 	}
 
 	voiceChannel.join().then(connection =>{
-		this.connection = connection;
-		utils.getYoutubeURL(songname, function(metadata) {
-			message.channel.stopTyping();
-			callback(metadata);
-		});
+		_connection = this.connection = connection;
+
+		if (connected === false) {
+			player.enqueue(message.channel, { name: "hello/" + (Math.random() + 1) + ".wav", stream: false })
+			player.start(message, connection);
+		}
+
+		if (songname.indexOf("soundcloud.com") > -1) {
+			utils.getSoundCloudUrl(songname, function(metadata) {
+				message.channel.stopTyping();
+				callback(metadata);
+			});
+		}
+		// If else
+		// If else
+		else {
+			// Default to youtube
+			utils.getYoutubeURL(songname, function(metadata) {
+				message.channel.stopTyping();
+				callback(metadata);
+			});
+		}
 
 	}).catch(err => console.log(err));
 }
