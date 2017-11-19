@@ -283,7 +283,7 @@ module.exports = {
 		message.channel.stopTyping();
 	}, 
 	shrug: function(message){
-		message.channel.send("¯\_(ツ)_/¯"); 
+		message.channel.send("¯\\_(ツ)_/¯"); 
 		message.channel.stopTyping();
 	}
 }
