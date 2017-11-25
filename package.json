@@ -1,0 +1,32 @@
+{
+  "name": "nodebot",
+  "version": "0.1.0",
+  "description": "Using discord.js to play music in Discord",
+  "main": "main.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.1",
+    "discord.js": "^11.1.0",
+    "ffmpeg-binaries": "^3.2.2-3",
+    "html-entities": "^1.2.1",
+    "node-opus": "^0.2.7",
+    "nodemon": "^1.11.0",
+    "shuffle-array": "^1.0.1",
+    "spotify-web-api-node": "^2.5.0",
+    "youtube-dl": "^1.11.1",
+    "ytdl-core": "^0.14.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jeflux/NodeBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jeflux/NodeBot/issues"
+  },
+  "homepage": "https://github.com/Jeflux/NodeBot#readme"
+}

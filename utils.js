@@ -1,7 +1,5 @@
 const https = require("https");
 const cheerio = require("cheerio");
-const youtubedl = require('youtube-dl');
-const xray = require("x-ray");
 const fs = require('fs');
 const url = require('url');
 const Entities = require('html-entities').XmlEntities;
@@ -18,7 +16,8 @@ module.exports = {
                 path: url.parse(query).path,
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json; charset=iso-8859-1', 
+                    'Content-Type': 'application/json; charset=iso-8859-1',
+                    "user-agent": "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6" 
                 }
             };
             
@@ -30,16 +29,40 @@ module.exports = {
                 return;
         }
         else {
-            var formattedquery = query.replace(/\s/g, "+").replaceAll("å", "a").replaceAll("ä", "a").replaceAll("ö", "o");
+            var formattedquery = query.replace(/\s/g, "+").replace(/å/g, "a").replace(/ä/g, "a").replace(/ö/g, "o");
             options = {
                 hostname: 'www.youtube.com',
                 port: 443,
                 path: '/results?search_query='+formattedquery,
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json; charset=utf-8', 
-                }
+                    'Content-Type': 'application/json; charset=utf-8',
+                    "user-agent": "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6" 
+                },
             };
+        }
+
+        if (isUrl === true) {
+            var id = query.split("v=")[1].split("&")[0];
+            var metadata = {
+                title: "",
+                url: "www.youtube.com/watch?v=" + id,
+                id: id,
+                announce: true,
+                length: 0
+            };
+
+            require("./youtubeHelper").applyVideosLength([ metadata ], function(newMetadata) {
+                callback(newMetadata[0]);
+            });
+            return;
+        }
+
+        if (isList === false) {
+            require("./youtubeHelper").getSingleVideo(query, function(metadata) {
+                callback(metadata);
+            })
+            return;
         }
 
         https.get(options, (res) => {
@@ -127,32 +150,32 @@ module.exports = {
         });
     },
 
-    downloadVideo: function(videoUrl, callbackInfo, callbackDone) {
-        console.log("Downloading " + videoUrl)
+    // downloadVideo: function(videoUrl, callbackInfo, callbackDone) {
+    //     console.log("Downloading " + videoUrl)
 
-        var video = youtubedl(videoUrl,
-            // Optional arguments passed to youtube-dl.
-            ['--format=18'],
-            // Additional options can be given for calling `child_process.execFile()`.
-            { cwd: __dirname });
+    //     var video = youtubedl(videoUrl,
+    //         // Optional arguments passed to youtube-dl.
+    //         ['--format=18'],
+    //         // Additional options can be given for calling `child_process.execFile()`.
+    //         { cwd: __dirname });
 
-        // Will be called when the download starts.
-        video.on('info', function(info) {
-            console.log('Download started');
-            console.log('filename: ' + info._filename);
-            console.log('size: ' + info.size);
-            this._filename = info._filename;
-            callbackInfo("./audio_cache/" + this._filename);
-            this.pipe(fs.createWriteStream("./audio_cache/" + this._filename));
-        });
+    //     // Will be called when the download starts.
+    //     video.on('info', function(info) {
+    //         console.log('Download started');
+    //         console.log('filename: ' + info._filename);
+    //         console.log('size: ' + info.size);
+    //         this._filename = info._filename;
+    //         callbackInfo("./audio_cache/" + this._filename);
+    //         this.pipe(fs.createWriteStream("./audio_cache/" + this._filename));
+    //     });
 
-        video.on('complete', function complete(info) {
-            console.log("already done");
-            callbackDone("./audio_cache/" + this._filename);
-        });
+    //     video.on('complete', function complete(info) {
+    //         console.log("already done");
+    //         callbackDone("./audio_cache/" + this._filename);
+    //     });
 
-        video.on('end', function() {
-            callbackDone("./audio_cache/" + this._filename);
-        });
-    }
+    //     video.on('end', function() {
+    //         callbackDone("./audio_cache/" + this._filename);
+    //     });
+    // }
 }

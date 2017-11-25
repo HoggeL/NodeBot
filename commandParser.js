@@ -1,6 +1,7 @@
 const player = require("./player.js");
 const utils = require("./utils");
 const doc = require("./doc.js");
+const spotify = require("./spotifyHelper.js")
 
 _voiceChannel = undefined;
 _connection = undefined;
@@ -37,16 +38,7 @@ function getNowPlaying() {
 	return m;
 }
 
-function parsePlayMessage(message, callback) {
-	message.channel.startTyping();
-	var songname = message.content.split(/^\//)[1].split(/^([^\s]*)(\s)/)[3];
-
-	if (songname === undefined) {
-		message.channel.send("That is not a valid song name, you dofus!");
-		message.channel.stopTyping();
-		return;
-	}
-	
+function joinVoice(message, callback) {
 	var connected = false;
 	if (_connection !== undefined)
 		connected = true;
@@ -72,6 +64,21 @@ function parsePlayMessage(message, callback) {
 			player.start(message, connection);
 		}
 
+		callback();
+	}).catch(err => console.log(err));
+}
+
+function parsePlayMessage(message, callback) {
+	message.channel.startTyping();
+	var songname = message.content.split(/^\//)[1].split(/^([^\s]*)(\s)/)[3];
+
+	if (songname === undefined) {
+		message.channel.send("That is not a valid song name, you dofus!");
+		message.channel.stopTyping();
+		return;
+	}
+	
+	joinVoice(message, function() {
 		if (songname.indexOf("soundcloud.com") > -1) {
 			utils.getSoundCloudUrl(songname, function(metadata) {
 				message.channel.stopTyping();
@@ -87,8 +94,7 @@ function parsePlayMessage(message, callback) {
 				callback(metadata);
 			});
 		}
-
-	}).catch(err => console.log(err));
+	});
 }
 
 //
@@ -272,6 +278,16 @@ module.exports = {
 		m += "\n```\n**/help [command] for more information**";
 		message.channel.send(m);
 		message.channel.stopTyping();
+	},
+	spotify: function(message) {
+		var url = message.content.split(/^\//)[1].split(/^([^\s]*)(\s)/)[3];
+		joinVoice(message, function() {
+			spotify.getPlaylist(url, function(metadata) {
+				player.enqueue(message.channel, { name: metadata.url, stream: true, metadata })
+				player.start(message, connection);
+				message.channel.stopTyping();
+			});
+		});
 	},
 	shuffle: function(message) {
 		player.shuffle();

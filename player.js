@@ -30,7 +30,7 @@ module.exports = {
         else if (playInfo.metadata.url.indexOf("youtube.com") > -1) {
             var stream = undefined;
             if (playInfo.metadata.isLive === undefined || playInfo.metadata.isLive === false)
-                stream = ytdl(playInfo.name, { filter : 'audioonly' })
+                stream = ytdl(playInfo.name, { filter : 'audioonly', quality_label: "720p" })
 	        else
                 stream = ytdl(playInfo.name)
             
@@ -55,34 +55,28 @@ module.exports = {
 
 
 	    this.dispatcher.on("end", end => {
-            this.dispatcher.removeAllListeners("end");
-            this.dispatcher.stream.destroy();
-            this.dispatcher.destroy();
+            var _this = this;
+            setTimeout(function() {
+                _this.dispatcher.removeAllListeners("end");
+                _this.dispatcher.stream.destroy();
+                _this.dispatcher.destroy();
 
-            this.discordClient.user.setGame("nothing");
+                _this.discordClient.user.setGame("nothing");
 
-            this.isPlaying = false;
+                _this.isPlaying = false;
 
-            // var dt = date.getMilliseconds() - this.lastEnd;
-            // if (dt < 100) {
-            //     console.log(date.getMilliseconds() - this.lastEnd);
-            //     console.log("Skipping possible duplicate events");
-            //     return;
-            // }
+                if (end === undefined) {
+                    console.log("Song is not done yet");
+                    _this.dispatcher.stream = undefined;
+                    _this.play(channel, connection, playInfo, true);
+                    return;
+                }
 
-            // this.lastEnd = date.getMilliseconds();
-
-            if (end === undefined) {
-                console.log("Song is not done yet");
-                this.dispatcher.stream = undefined;
-                this.play(channel, connection, playInfo, true);
-                return;
-            }
-
-            if (this.queue.length > 0) {
-                console.log("trying to play next");
-                this.play(channel, connection, this.queue.shift(), false);
-            }
+                if (_this.queue.length > 0) {
+                    console.log("trying to play next");
+                    _this.play(channel, connection, _this.queue.shift(), false);
+                }
+            }, 200);
 	    });
     
 	    this.dispatcher.on('error', e => {
