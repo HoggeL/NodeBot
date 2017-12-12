@@ -63,6 +63,11 @@ client.on('message', message => {
 			commandMap[command](message);
 			message.channel.stopTyping();	
 		}
+		else if(commandMap[command[0]] !== undefined)
+		{
+			commandMap[command[0]](message);
+			message.channel.stopTyping();
+		}
 		else
 			message.channel.send("Command not recognized");
 	}
