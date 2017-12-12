@@ -301,6 +301,20 @@ module.exports = {
 	shrug: function(message){
 		message.channel.send("¯\\_(ツ)_/¯"); 
 		message.channel.stopTyping();
+	},
+	r: function(message){
+		if(message.content[2] == '/')
+		{
+			var subreddit = message.content.split(/^\//)[1]
+			var url = "https://reddit.com/" + subreddit;
+			message.channel.send(url);
+			message.channel.stopTyping();
+
+		}
+		else {
+			message.channel.send("Command not recognized");
+			message.channel.stopTyping();
+		}
 	}
 }
 // Disabled for now
