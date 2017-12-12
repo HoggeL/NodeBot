@@ -1,13 +1,22 @@
 const request = require("request")
 const http = require("http")
+const encoding = require("encoding")
+const queryString = require("querystring")
 
 module.exports = {
     getSingleVideo: function(query, callback, applyLength = true) {
         var apiKey = require("./settings.js").youtube.apiKey;
 
         var _this = this;
-        request.get("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=" + query + "&maxResults=1&key=" + apiKey, function(error, response, body) {
-            var video = JSON.parse(body).items[0];
+        request.get("https://www.googleapis.com/youtube/v3/search?regionCode=SE&part=snippet&type=video&q=" + queryString.escape(query) + "&maxResults=1&key=" + apiKey, function(error, response, body) {
+
+            var items = JSON.parse(body).items;
+            if (items.length <= 0) {
+                console.log(query, body);
+                callback(undefined);
+                return;
+            }
+            var video = items[0];
             var id = video.id.videoId;
 
             var metadata = {
@@ -31,12 +40,16 @@ module.exports = {
     getMultipleVideos: function(queryCollection, callback) {
         var metadataArray = [];
         var _this = this;
+        var count = 0;
         queryCollection.forEach(function(element) {
             this.getSingleVideo(element, function(metadata) {
-                metadataArray.push(metadata);
+                if (metadata !== undefined)
+                    metadataArray.push(metadata);
+
+                count++;
 
                 // If same length, we're done
-                if (metadataArray.length === queryCollection.length) {
+                if (count === queryCollection.length) {
                     _this.applyVideosLength(metadataArray, function(newMetadata) {
                         callback(newMetadata);
                     });
@@ -57,6 +70,7 @@ module.exports = {
                 currentRequest += "&part=snippet,contentDetails&key=" + apiKey;
                 requests.push(currentRequest);
                 currentRequest = "https://www.googleapis.com/youtube/v3/videos?id=";
+                count = 0;
             }
 
             currentRequest += "," + videos[i].id;
@@ -67,11 +81,25 @@ module.exports = {
             requests.push(currentRequest);
         }
 
+        var map = {};
+        function updateVideos() {
+            videos.map(function(element) {
+                if (map[element.id] === undefined) {
+                    // TODO: Fix this
+                    element.length = 0;
+                    return element;
+                }
+                element.title = map[element.id].title;
+                element.length = map[element.id].seconds;
+                return element;
+            });
+
+            callback(videos);
+        }
+
+        var count = 0;
         requests.forEach(function(element) {
             request.get(element, function(error, response, body) {
-                
-                var map = {};
-
                 JSON.parse(body).items.forEach(function(detail) {
                     var duration = detail.contentDetails.duration.split("PT")[1]
                     var arr = duration.split(/[A-Z]/);
@@ -86,14 +114,12 @@ module.exports = {
 
                     map[id] = { seconds: clipSeconds, title: detail.snippet.title };
                 }, this);
+                count++;
 
-                videos.map(function(element) {
-                    element.title = map[element.id].title;
-                    element.length = map[element.id].seconds;
-                    return element;
-                });
-
-                callback(videos);
+                // If map is populated fully
+                if (count === requests.length) {
+                    updateVideos(); 
+                }
             });
         }, this);
     }

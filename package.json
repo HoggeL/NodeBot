@@ -5,6 +5,8 @@
   "main": "main.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.1",
+    "node-soundcloud": "0.0.6",
+    "encoding": "^0.1.12",
     "discord.js": "^11.1.0",
     "ffmpeg-binaries": "^3.2.2-3",
     "html-entities": "^1.2.1",

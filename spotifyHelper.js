@@ -4,7 +4,6 @@ const http = require("http")
 const spotify = require("spotify-web-api-node")
 const ythelper = require("./youtubeHelper.js")
 
-
 module.exports = {
     getPlaylist: function(spotifyUri, callback) {
         var q = spotifyUri.split(":");
@@ -22,7 +21,7 @@ module.exports = {
                 var queries = [];
 
                 data.body.tracks.items.forEach(function(e, i) {
-                    queries.push(e.track.artists[0].name + " - " + e.track.name);
+                    queries.push(e.track.artists[0].name.replace(/\"/g, "") + " - " + e.track.name.replace(/\"/g, ""));
                 }, this);
 
                 ythelper.getMultipleVideos(queries, function(metadata) {
