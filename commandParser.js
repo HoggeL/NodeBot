@@ -305,8 +305,8 @@ module.exports = {
 	r: function(message){
 		if(message.content[2] == '/')
 		{
-			var subreddit = message.content.split(/^\//)[1]
-			var url = "https://reddit.com/" + subreddit;
+			var subreddit = message.content.split('/')[2];
+			var url = "https://reddit.com/r/" + subreddit;
 			message.channel.send(url);
 			message.channel.stopTyping();
 
