@@ -306,15 +306,19 @@ module.exports = {
 		if(message.content[2] == '/')
 		{
 			var subreddit = message.content.split('/')[2];
+			subreddit = subreddit.split(' ')[0];
 			var url = "https://reddit.com/r/" + subreddit;
 			message.channel.send(url);
 			message.channel.stopTyping();
-
 		}
 		else {
 			message.channel.send("Command not recognized");
 			message.channel.stopTyping();
 		}
+	},
+	lenny: function(message){
+		message.channel.send("( ͡° ͜ʖ ͡°)");
+		message.channel.stopTyping();
 	}
 }
 // Disabled for now
