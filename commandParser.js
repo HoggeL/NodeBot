@@ -77,8 +77,8 @@ function parsePlayMessage(message, callback) {
 		message.channel.stopTyping();
 		return;
 	}
-	
-	joinVoice(message, function() {
+
+	joinCallback = function() {
 		if (songname.indexOf("soundcloud.com") > -1) {
 			utils.getSoundCloudUrl(songname, function(metadata) {
 				message.channel.stopTyping();
@@ -94,7 +94,13 @@ function parsePlayMessage(message, callback) {
 				callback(metadata);
 			});
 		}
-	});
+	};
+
+	if (require("./settings.js").playLocally !== true)
+		joinVoice(message, joinCallback);
+	else 
+		// If playing locally, we don't need to join a voice channel
+		joinCallback();
 }
 
 //
@@ -121,7 +127,7 @@ module.exports = {
 			}
 
 			player.enqueue(message.channel, { name: metadata.url, stream: true, metadata })
-			player.start(message, connection);
+			player.start(message, _connection);
 		});
 	},
 	playnext: function(message) {
@@ -133,7 +139,7 @@ module.exports = {
 			}
 
 			player.enqueue(message.channel, { name: metadata.url, stream: true, metadata }, true)
-			player.start(message, connection);
+			player.start(message, _connection);
 		});
 	},
 	stream: function(message) {
@@ -147,7 +153,7 @@ module.exports = {
 			metadata.isLive = true;
 
 			player.enqueue(message.channel, { name: metadata.url, stream: true, metadata }, false)
-			player.start(message, connection);
+			player.start(message, _connection);
 		});
 	},
 	pause: function(message) {
