@@ -96,11 +96,16 @@ function parsePlayMessage(message, callback) {
 		}
 	};
 
-	if (require("./settings.js").playLocally !== true)
+	pl = require("./settings.js").playLocally
+	console.log("Should play local: " + pl)
+
+	if (!pl) {
 		joinVoice(message, joinCallback);
-	else 
+	}
+	else {
 		// If playing locally, we don't need to join a voice channel
 		joinCallback();
+	}
 }
 
 //
@@ -212,7 +217,7 @@ module.exports = {
 			return;
 		}
 		player.dispatcher.setVolume(volume);
-		plauer.volume = volume;
+		player.volume = volume;
 		message.channel.send("Volume set to " + volume);
 	},
 	clear: function(message) {

@@ -14,7 +14,7 @@ client.on('ready', () => {
 	console.log('I am ready!');
 	commandMap.discordClient = client;
 	commandMap.__init();
-	client.user.setGame("nothing");
+	client.user.setActivity("nothing");
 });
 
 function exitHandler(options, err) {

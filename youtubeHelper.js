@@ -100,6 +100,9 @@ module.exports = {
         var count = 0;
         requests.forEach(function(element) {
             request.get(element, function(error, response, body) {
+				if (response.statusCode != 200) {
+					return
+				}
                 JSON.parse(body).items.forEach(function(detail) {
                     var duration = detail.contentDetails.duration.split("PT")[1]
                     var arr = duration.split(/[A-Z]/);

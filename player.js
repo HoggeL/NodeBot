@@ -2,6 +2,8 @@ const shuffleArray = require('shuffle-array')
 const ytdl = require('ytdl-core')
 var SC = require('node-soundcloud')
 const portAudio = require('naudiodon')
+const fs = require('fs')
+const opus_decoder = require('./opus-decode')
 
 module.exports = {
     isPlaying: false,
@@ -18,10 +20,19 @@ module.exports = {
 
     playLocally: function(playInfo)
     {
-        stream = ytdl(playInfo.name)
+		stream = ytdl(playInfo.name, { quality: "highestaudio" })
+		stream.pipe(fs.createWriteStream('cache/video.flv'))
         stream.pipe(audioOut)
-        audioOut.start()
 
+		// audioOut.start()
+
+		audioOut.on('stream', function(stream) {
+			
+		});
+
+		stream.on("info", (info, format) => {
+			console.log("Info: " + info + ". Format: " + format);
+		})
         stream.on("end", () => {
             var _this = this
             setTimeout(function() {
@@ -32,6 +43,7 @@ module.exports = {
     },
     playConnection: function(channel, connection, playInfo, isRetry)
     {
+	console.log("PlayConnection")
         if (playInfo.stream === false) {
             this.dispatcher = connection.playFile(playInfo.name, { passes: 2 })
         }
@@ -97,7 +109,9 @@ module.exports = {
         this.nowplaying = playInfo.metadata
         this.currentPlayInfo = playInfo
 
-        if (require("./settings.js").playLocally)
+	pl = require("./settings.js").playLocally
+
+        if (pl)
             this.playLocally(playInfo)
         else
             this.playConnection(channel, connection, playInfo, isRetry)
@@ -109,12 +123,13 @@ module.exports = {
             return
         }
 
+	console.log("Init audio out")
+
         audioOut = new portAudio.AudioIO({
             outOptions: {
                 channelCount: 2,
                 sampleFormat: portAudio.SampleFormat16Bit,
-                sampleRate: 48000,
-                deviceId: -1 // Use -1 or omit the deviceId to select the default device
+                sampleRate: 48000
             }
         });
 
